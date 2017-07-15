@@ -13,7 +13,6 @@ class KernelCMDParser(object):
     PARAM_DELIMITER = ';'
     PARAM_EVAL      = ':'
     KPP_RE_PATTERN  = '^kpp='
-    CONFIG_PATH     = './kpp.ini'
     def __init__(self):
         self.cmd = self.getCMDParams()
         self.params = self.getKPPParams()
