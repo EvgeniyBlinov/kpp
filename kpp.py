@@ -19,8 +19,7 @@ class KernelCMDParser(object):
         self.params = self.getKPPParams()
 
     def getCMDParams(self):
-        #with open('/proc/cmdline') as f:
-        with open('./old/cmdline') as f:
+        with open('/proc/cmdline') as f:
             lines = f.readlines()
         return ' '.join(lines).split(' ')
 
