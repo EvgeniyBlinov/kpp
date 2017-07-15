@@ -3,6 +3,12 @@ kernel custom parameters parser
 
 ## Install
 
+!!! IMPORTANT - save you current grub.cfg
+
+```sh
+cp /boot/grub/grub.cfg /boot/grub/grub.cfg.work
+```
+
 ```sh
 sudo -s -- <<EOC
 wget -O /usr/local/bin/kpp https://raw.githubusercontent.com/EvgeniyBlinov/kpp/master/kpp.py?t=`date +%s` &&
