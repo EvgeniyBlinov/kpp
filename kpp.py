@@ -56,11 +56,11 @@ linux=`version_find_latest $list`
 case $linux in
 *.efi.signed)
     # We handle these in linux_entry.
-    list=`echo $list | tr ' ' '\n' | grep -vx $linux | tr '\n' ' '`
+    list=`echo $list | tr ' ' '\\n' | grep -vx $linux | tr '\\n' ' '`
     exit 0
     ;;
 esac
-gettext_printf "Found linux image: %s\n" "$linux" >&2
+gettext_printf "Found linux image: %s\\n" "$linux" >&2
 basename=`basename $linux`
 dirname=`dirname $linux`
 rel_dirname=`make_system_path_relative_to_its_root $dirname`
