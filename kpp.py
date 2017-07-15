@@ -43,7 +43,7 @@ class KernelCMDParser(object):
         print '#!/bin/sh'
         print '. /etc/grub.d/10_linux > /dev/null 2>&1'
         for cmd in config.split(';'):
-            print "linux_entry \"${OS}\" \"${version}\" kpp \"${GRUB_CMDLINE_LINUX} ${GRUB_CMDLINE_LINUX_DEFAULT} 'kpp=%s'\"" % cmd
+            print "linux_entry \"${OS}\" \"$(uname -r)\" kpp \"${GRUB_CMDLINE_LINUX} ${GRUB_CMDLINE_LINUX_DEFAULT} 'kpp=%s'\"" % cmd
 
 
 # settings
