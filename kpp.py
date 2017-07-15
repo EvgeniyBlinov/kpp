@@ -40,10 +40,36 @@ class KernelCMDParser(object):
                 print param
 
     def doConfig(self, config):
-        print '#!/bin/sh'
-        print '. /etc/grub.d/10_linux > /dev/null 2>&1'
+        #print '#!/bin/sh'
+        #print '. /etc/grub.d/10_linux > /dev/null 2>&1'
+        print """#!/bin/sh
+. /etc/grub.d/10_linux > /dev/null 2>&1
+########################################################################
+# grub-common:2.02~beta2-36ubuntu3.11 - fixes
+########################################################################
+for path in / /boot/;do test -f "${path}vmlinuz-$(uname -r)" && export rel_dirname=${path%%/};done
+export version="$(uname -r)"
+export basename="$version"
+export dirname="$rel_dirname"
+initrd=
+for i in "initrd.img-${version}" "initrd-${version}.img" "initrd-${version}.gz" \
+    "initrd-${version}" "initramfs-${version}.img" \
+    "initrd.img-${alt_version}" "initrd-${alt_version}.img" \
+    "initrd-${alt_version}" "initramfs-${alt_version}.img" \
+    "initramfs-genkernel-${version}" \
+    "initramfs-genkernel-${alt_version}" \
+    "initramfs-genkernel-${GENKERNEL_ARCH}-${version}" \
+    "initramfs-genkernel-${GENKERNEL_ARCH}-${alt_version}"; do
+if test -e "${dirname}/${i}" ; then
+    initrd="$i"
+    break
+fi
+done
+########################################################################
+"""
         for cmd in config.split(';'):
             print "linux_entry \"${OS} %(cmd)s\" \"$(uname -r)\" kpp \"${GRUB_CMDLINE_LINUX} ${GRUB_CMDLINE_LINUX_DEFAULT} 'kpp=%(cmd)s'\"" % {'cmd': cmd}
+
 ########################################################################
 
 # settings
