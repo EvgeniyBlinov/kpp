@@ -47,23 +47,33 @@ class KernelCMDParser(object):
 ########################################################################
 # grub-common:2.02~beta2-36ubuntu3.11 - fixes
 ########################################################################
-for path in / /boot/;do test -f "${path}vmlinuz-$(uname -r)" && export rel_dirname=${path%%/};done
-export version="$(uname -r)"
-export basename="$version"
-export dirname="$rel_dirname"
+version="$(uname -r)"
+list=`for i in /boot/vmlinuz-$version /boot/vmlinux-$version /vmlinuz-$version /vmlinux-$version /boot/kernel-$version ; do
+    if grub_file_is_not_garbage "$i" ; then echo -n "$i " ; fi
+done`
+
+linux=`version_find_latest $list`
+case $linux in
+*.efi.signed)
+    # We handle these in linux_entry.
+    list=`echo $list | tr ' ' '\n' | grep -vx $linux | tr '\n' ' '`
+    exit 0
+    ;;
+esac
+gettext_printf "Found linux image: %s\n" "$linux" >&2
+basename=`basename $linux`
+dirname=`dirname $linux`
+rel_dirname=`make_system_path_relative_to_its_root $dirname`
+version=`echo $basename | sed -e "s,^[^0-9]*-,,g"`
+alt_version=`echo $version | sed -e "s,\.old$,,g"`
+linux_root_device_thisversion="${LINUX_ROOT_DEVICE}"
+
 initrd=
-for i in "initrd.img-${version}" "initrd-${version}.img" "initrd-${version}.gz" \
-    "initrd-${version}" "initramfs-${version}.img" \
-    "initrd.img-${alt_version}" "initrd-${alt_version}.img" \
-    "initrd-${alt_version}" "initramfs-${alt_version}.img" \
-    "initramfs-genkernel-${version}" \
-    "initramfs-genkernel-${alt_version}" \
-    "initramfs-genkernel-${GENKERNEL_ARCH}-${version}" \
-    "initramfs-genkernel-${GENKERNEL_ARCH}-${alt_version}"; do
-if test -e "${dirname}/${i}" ; then
-    initrd="$i"
-    break
-fi
+for i in "initrd.img-${version}" "initrd-${version}.img" "initrd-${version}.gz"     "initrd-${version}" "initramfs-${version}.img"     "initrd.img-${alt_version}" "initrd-${alt_version}.img"     "initrd-${alt_version}" "initramfs-${alt_version}.img"     "initramfs-genkernel-${version}"     "initramfs-genkernel-${alt_version}"     "initramfs-genkernel-${GENKERNEL_ARCH}-${version}"     "initramfs-genkernel-${GENKERNEL_ARCH}-${alt_version}"; do
+    if test -e "${dirname}/${i}" ; then
+        initrd="$i"
+        break
+    fi
 done
 ########################################################################
 """
